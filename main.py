@@ -62,6 +62,8 @@ class CellGrid:
         return neighborhood_counts
 
    #New logic reflecting the current cells. It is not name agnostic so it needs to be updated if we change the types.
+   # The current logic should reflect the google doc but better logic
+   # should be implemented eventually.
     @staticmethod
     def cell_rules(neighborhood, cell_type):
         spread_threshold = 0.90
@@ -78,7 +80,7 @@ class CellGrid:
                 return 2
 
         elif cell_type == 1:
-            if neighborhood["Bacteria"] == 0 and r>= 0.9:
+            if neighborhood["Bacteria"] != 0 and r>= 0.9:
                 return 2
             else:
                 return 1
@@ -96,7 +98,7 @@ class CellGrid:
 
     #loops through the whole grid and stores an update at each position in a temp grid
     #  based on the surroundings and then changes the original grid
-    # I have hard coded the logic for the surroundings but would like to make better functions for it later.
+    # I have hard coded the logic for the cell interactions.
     def update_grid(self):
         for row in range(self.rows):
             for col in range(self.columns):
