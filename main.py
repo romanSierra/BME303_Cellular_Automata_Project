@@ -4,8 +4,8 @@
 
 #import matplotlib as plt
 import numpy as np
-
-class Cell_Grid:
+import random
+class CellGrid:
 
 #  If you want to change the cell names, change this tuple. The code should be agnostic hopefully.
     type_key = ("Empty", "Healthy", "Damaged", "Bacteria")
@@ -17,23 +17,23 @@ class Cell_Grid:
 
         #Array Creation
         rng = np.random.default_rng()
-        self.grid = rng.integers(low = 0, high = len(Cell_Grid.type_key), size = (rows, columns))
+        self.grid = rng.integers(low = 0, high = len(CellGrid.type_key), size = (rows, columns))
         self.grid_temp = np.zeros_like(self.grid)
 
     #returns the cell name based on the its number
     @staticmethod
     def check_type(value):
-            return Cell_Grid.type_key[value]
+         return CellGrid.type_key[value]
 
    # returns the cell number based on its name
     @staticmethod
     def get_num_type(value):
-        return Cell_Grid.type_key.index(value)
+        return CellGrid.type_key.index(value)
 
 
     #returns a dictionary with cell type and their counts
     def get_counts(self):
-        type_counts = {"Empty":0, "Healthy":0, "Damaged":0, "Bacteria":0}
+        type_counts = dict.fromkeys(self.type_key, 0)
         for row in self.grid:
             for cell in row:
                 type_counts[self.check_type(cell)] += 1
@@ -52,25 +52,46 @@ class Cell_Grid:
         #slices a neighborhood window and counts the type of each cell in the window, then removes the
         #count for the  center cell
         neighborhood = self.grid[r_start:r_end, c_start:c_end]
-        neighborhood_counts = {"Empty":0, "Healthy":0, "Damaged":0, "Bacteria":0}
+        neighborhood_counts = dict.fromkeys(self.type_key, 0)
         #print(neighborhood)
         for r in neighborhood:
             for c in r:
-                neighborhood_counts[Cell_Grid.check_type(c)] += 1
-        neighborhood_counts[Cell_Grid.check_type(self.grid[row,col])] -= 1
+                neighborhood_counts[CellGrid.check_type(c)] += 1
+        neighborhood_counts[CellGrid.check_type(self.grid[row,col])] -= 1
 
         return neighborhood_counts
 
-    # this is janky logic for testing that returns the most common cell in a cell's surroundings
-    # to be used in my update method. it will change to reflect the right logic later.
+   #New logic reflecting the current cells. It is not name agnostic so it needs to be updated if we change the types.
     @staticmethod
     def cell_rules(neighborhood, cell_type):
-        max_count = max(neighborhood.values())
-        max_key = ""
-        for key in neighborhood:
-            if max_count == neighborhood[key]:
-                max_key = key
-        return Cell_Grid.get_num_type(max_key)
+        spread_threshold = 0.90
+        r = random.uniform(0.0, 1.0)
+        if cell_type == 3:
+            if r >= 0.95:
+                return 2
+            return 3
+
+        elif cell_type == 2:
+            if r >= 0.8:
+                return 0
+            else:
+                return 2
+
+        elif cell_type == 1:
+            if neighborhood["Bacteria"] == 0 and r>= 0.9:
+                return 2
+            else:
+                return 1
+
+        else:
+            if r * neighborhood["Bacteria"]>= spread_threshold:
+                return 3
+            elif neighborhood["Healthy"] != 0 and r>=0.85:
+                 return 1
+            else:
+                return 0
+
+
 
 
     #loops through the whole grid and stores an update at each position in a temp grid
@@ -81,11 +102,12 @@ class Cell_Grid:
             for col in range(self.columns):
                 current_type = self.grid[row, col]
                 surroundings = self.check_neighborhood(row, col)
-                self.grid_temp[row, col] = Cell_Grid.cell_rules(surroundings, current_type)
+                self.grid_temp[row, col] = CellGrid.cell_rules(surroundings, current_type)
         self.grid = self.grid_temp.copy()
 
 
-test_grid = Cell_Grid(5, 5)
+
+test_grid = CellGrid(5, 5)
 print(test_grid.grid)
 print(test_grid.get_counts())
 print(test_grid.check_type(test_grid.grid[0,0]))
