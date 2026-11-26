@@ -1,6 +1,4 @@
 # This has the random grid, cell types, neighborhood, and basic change implementations,
-# some code is redundant like my counts fuction
-# This is mostly a proof of concept and the creation of a class may not be necessary
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -243,6 +241,6 @@ class CellGrid:
 
 
 
-
+#valid wound types are infected or uninfected, leaving it blank will make a random distribution
 test_grid = CellGrid(50, 50, wound_radius = 8, wound_type = "infected", immune_system=False)
 test_grid.run(120, (range(0,121, 5)))
