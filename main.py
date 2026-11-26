@@ -66,8 +66,6 @@ class CellGrid:
     @staticmethod
     def check_type(value):
          return CellGrid.type_key[value]
-
-
     #returns a dictionary with cell type and their counts
     def get_counts(self):
         type_counts = dict.fromkeys(self.type_key, 0)

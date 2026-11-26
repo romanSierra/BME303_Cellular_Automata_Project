@@ -22,3 +22,5 @@ Desktop.ini
 # Generated simulation plots
 BME303_Cellular_Automata_Project_LineGraph_t*
 BME303_Cellular_Automata_Project_Grids_t*
+cell_graph_animation*
+cell_grid_animation*
